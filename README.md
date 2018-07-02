@@ -6,7 +6,7 @@ For an *N* dimensional data set, Extended Isolation Forest has *N* levels of ext
 
 ## Installation
 
-  pip install git+https://github.com/mgckind/eif.git
+  pip install git+https://github.com/sahandha/eif.git
 
 
 ## Requirements
