@@ -1,6 +1,9 @@
 import sys
 import os
-from distutils.core import setup
+try:
+    from setuptools import setup, find_packages
+except ImportError:
+    from distutils.core import setup
 prjdir = os.path.dirname(__file__)
 
 def read(filename):
@@ -12,16 +15,16 @@ library_dirs = []
 include_dirs = []
 exec(open('version.py').read())
 setup(
-    name='iso_forest',
+    name='eif',
     version=__version__,
-    author='Matias Carrasco Kind, Sahand Hariri',
-    author_email='mcarras2@illinois.edu',
+    author='Matias Carrasco Kind , Sahand Hariri',
+    author_email='mcarras2@illinois.edu', 'sahandha@gmail.com',
     scripts=[],
-    py_modules=['iso_forest','version'],
+    py_modules=['eif','version'],
     packages=[],
     license='License.txt',
     description='Extended Isolation Forest for anomaly detection',
     long_description=read('README.md'),
-    url='https://github.com/mgckind/eif',
-    install_requires=[],
+    url='https://github.com/sahandha/eif',
+    install_requires=["numpy"],
 )
