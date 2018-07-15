@@ -18,7 +18,7 @@ setup(
     name='eif',
     version=__version__,
     author='Matias Carrasco Kind , Sahand Hariri',
-    author_email='mcarras2@illinois.edu', 'sahandha@gmail.com',
+    author_email='mcarras2@illinois.edu , sahandha@gmail.com',
     scripts=[],
     py_modules=['eif','version'],
     packages=[],
