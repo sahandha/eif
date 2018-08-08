@@ -1,3 +1,4 @@
+<a href="https://github.com/sahandha/eif/releases/tag/v1.0.1"> <img src="https://img.shields.io/badge/release-v1.0.1-blue.svg" alt="latest release" /></a><a href="https://pypi.org/project/eif/1.0.1/"><img src="https://img.shields.io/badge/pypi-v1.0.1-orange.svg" alt="pypi version"/></a>
 # Extended Isolation Forest
 
 This is a simple package implementation for the Extended Isolation Forest method. It is an improvement on the original algorithm Isolation Forest which is described (among other places) in this [paper](icdm08b.pdf) for detecting anomalies and outliers from a data point distribution. The original code can be found at [https://github.com/mgckind/iso_forest](https://github.com/mgckind/iso_forest)
