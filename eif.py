@@ -90,7 +90,7 @@ class iTree(object):
         else:
             mins = X.min(axis=0)
             maxs = X.max(axis=0)
-            idxs = np.random.choice(range(self.dim), self.dim-self.exlevel-1)
+            idxs = np.random.choice(range(self.dim), self.dim-self.exlevel-1, replace=False)
             self.n = np.random.normal(0,1,self.dim)
             self.n[idxs] = 0
             self.p = np.random.uniform(mins,maxs)
