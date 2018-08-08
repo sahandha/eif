@@ -33,6 +33,10 @@ See these notebooks for examples on how to use it
 
 ## Release
 
+### v1.0.1
+#### 2018-AUG-08
+- Bugfix for multidimensional data
+
 ### v1.0.0
 #### 2018-JUL-15
 - Initial Release
