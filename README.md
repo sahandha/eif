@@ -28,7 +28,7 @@ In addition, it also contains means to draw the trees created using the [igraph]
 
 See these notebooks for examples on how to use it
 
-- [Basics](Notebooks/IsolationForest.ipynb)
+- [Basics](Notebooks/EIF.ipynb)
 - [3D Example](Notebooks/general_3D_examples.ipynb)
 - [Tree visualizations](Notebooks/TreeVisualization.ipynb)
 
