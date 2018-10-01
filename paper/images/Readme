@@ -1,7 +1,0 @@
-montage -label 'a)' Tree.png -label 'b)' RadialPlot_Forest.png -tile 2x1 -geometry 350x350+8+8 ../example_if.png
-montage -label 'a)' Blob_ScoreMap_Generic.png -label 'b)' MultipleBlobs_ScoreMap_Generic.png -label 'c)' Sinusoid_ScoreMap_Generic.png -tile 3x1 -geometry 350x350+8+8 ../scores_maps.png
-montage -label 'a)' SingleBlob_CutBranches_Ex0.png -label 'b)' MultiBlob_CutBranches_Ex0.png -label 'c)' Sine_CutBranches_Ex0.png -tile 3x1 -geometry 350x350+8+8 ../Ex0.png
-montage -label 'a)' SingleBlob_CutBranches_Ex1.png -label 'b)' MultiBlob_CutBranches_Ex1.png -label 'c)' Sine_CutBranches_Ex1.png -tile 3x1 -geometry 350x350+8+8 ../Ex1.png
-montage -label 'a)' Blob_ScoreMap_Extended.png -label 'b)' MultipleBlobs_ScoreMap_Extended.png -label 'c)' Sinusoid_ScoreMap_Extended.png -tile 3x1 -geometry 350x350+8+8 ../scores_maps_extended.png
-montage -label 'a)' Blob_Training_Data.png -label 'b)' MultipleBlobs_Training_Data.png -label 'c)' Sinusoid_Training_Data.png -tile 3x1 -geometry 350x350+8+8 ../Training.png
-montage -label 'a)' example_points.png -label 'b)' example_score.png -tile 2x1 -geometry 350x350+8+8 ../example.png
