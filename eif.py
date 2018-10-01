@@ -14,7 +14,22 @@ from version import __version__
 
 
 def c_factor(n) :
+    """
+    Average path length of unsuccesful search in a binary search tree given n points
+    
+    Parameters
+    ----------
+    n : int
+        Number of data points for the BST.
+
+    Returns
+    -------
+    float
+        Average path length of unsuccesful search in a BST
+        
+    """
     return 2.0*(np.log(n-1)+0.5772156649) - (2.0*(n-1.)/(n*1.0))
+
 
 class iForest(object):
     """
