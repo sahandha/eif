@@ -1,4 +1,4 @@
-<a href="https://github.com/sahandha/eif/releases/tag/v1.0.1"> <img src="https://img.shields.io/badge/release-v1.0.1-blue.svg" alt="latest release" /></a><a href="https://pypi.org/project/eif/1.0.1/"><img src="https://img.shields.io/badge/pypi-v1.0.1-orange.svg" alt="pypi version"/></a>
+<a href="https://github.com/sahandha/eif/releases/tag/v1.0.2"> <img src="https://img.shields.io/badge/release-v1.0.2-blue.svg" alt="latest release" /></a><a href="https://pypi.org/project/eif/1.0.2/"><img src="https://img.shields.io/badge/pypi-v1.0.2-orange.svg" alt="pypi version"/></a>
 # Extended Isolation Forest
 
 This is a simple package implementation for the Extended Isolation Forest method. It is an improvement on the original algorithm Isolation Forest which is described (among other places) in this [paper](icdm08b.pdf) for detecting anomalies and outliers from a data point distribution. The original code can be found at [https://github.com/mgckind/iso_forest](https://github.com/mgckind/iso_forest)
@@ -28,11 +28,15 @@ In addition, it also contains means to draw the trees created using the [igraph]
 
 See these notebooks for examples on how to use it
 
-- [Basics](Notebooks/IsolationForest.ipynb)
+- [Basics](Notebooks/EIF.ipynb)
 - [3D Example](Notebooks/general_3D_examples.ipynb)
 - [Tree visualizations](Notebooks/TreeVisualization.ipynb)
 
 ## Release
+
+### v1.0.2
+#### 2018-OCT-01
+- Added documentation, examples and software paper
 
 ### v1.0.1
 #### 2018-AUG-08

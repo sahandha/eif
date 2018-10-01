@@ -1,0 +1,10 @@
+.ipynb_checkpoints*
+paper/images/
+paper/other_files/
+paper/Makefile
+paper/joss-logo.png
+paper/latex.template
+*.pyc
+build/
+dist/
+eif.egg-info/
