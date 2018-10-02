@@ -3,7 +3,9 @@
 
 This is a simple package implementation for the Extended Isolation Forest method. It is an improvement on the original algorithm Isolation Forest which is described (among other places) in this [paper](icdm08b.pdf) for detecting anomalies and outliers from a data point distribution. The original code can be found at [https://github.com/mgckind/iso_forest](https://github.com/mgckind/iso_forest)
 
-For an *N* dimensional data set, Extended Isolation Forest has *N* levels of extension, with *0* being identical to the case of standard Isolation Forest, and *N-1* being the fully extended version.
+The original algorithm suffers from an inconsistency in producing anomaly scores due to slicing operations. Even though the slicing hyperplanes are selected at random, they are always parallel to the coordinate reference frame. The shortcoming can be seen in score maps as presented in the example notebooks in this repository. In order to improve the situation, we propose an extension which allows the hyperplanes to be taken at random angles. The way in which this is done gives rise to multiple levels of extension depending on the dimensionality of the problem. For an *N* dimensional dataset, Extended Isolation Forest has *N* levels of extension, with *0* being identical to the case of standard Isolation Forest, and *N-1* being the fully extended version.
+
+Here we provide the source code for the algorithm as well as documented example notebooks to help get started. Various visualizations are provided such as score distributions, score maps, aggregate slicing of the domain, and tree and whole forest visualizations. most examples are in 2D. We present one 3D example. However, the algorithm works readily with higher dimensional data. 
 
 ## Installation
 
