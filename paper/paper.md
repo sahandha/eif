@@ -16,16 +16,16 @@ affiliations:
     index: 1
   - name: National Center for Supercomputing Applications, University of Illinois at Urbana-Champaign. 1205 W Clark St, Urbana, IL USA 61801
     index: 2
-date: 11 Sep 2018
+date: 02 Oct 2018
 bibliography: paper.bib
 ---
 
 
 # Summary
 
-The problem of anomaly detection has wide range of applications in various fields and scientific applications. Anomalous data can have as much scientific value as normal data or in some cases even more, and it is of vital importance to have robust, fast and reliable algorithms to detect and flag such anomalies. In this paper, we present an extension to the model-free anomaly detection algorithm, Isolation Forest [@Liu2008; @Liu2012]. This extension, named Extended Isolation Forest (EIF), improves the consistency and reliability of the anomaly score produced by standard methods for a given data point. We show that the standard Isolation Forest produces inconsistent scores using score maps, and that these score maps suffer from an artifact produced as a result of how the criteria for branching operation of the binary tree is selected.
+The problem of anomaly detection has wide range of applications in various fields and scientific applications. Anomalous data can have as much scientific value as normal data or in some cases even more, and it is of vital importance to have robust, fast and reliable algorithms to detect and flag such anomalies. In this paper, we present an extension to the model-free anomaly detection algorithm, Isolation Forest [@Liu2008; @Liu2012]. This extension, named Extended Isolation Forest (EIF), improves the consistency and reliability of the anomaly score produced by standard methods for a given data point. We show that the standard Isolation Forest produces inconsistent anomaly score maps, and that these score maps suffer from an artifact produced as a result of how the criteria for branching operation of the binary tree is selected.
 
-Our method allows for the slicing of the data to be done using hyperplanes with random slopes which results in improved score maps. The consistency and reliability of the algorithm is much improved using this extension. While the idea of using hyperplanes with random slopes is mentioned in [@liu2010detecting], it is only used in finding optimal slicing planes for clustered anomaly detection. The discussion of how to select the hyperplanes and use randomness to alleviate issues pertaining to the original algorithm is not presented. Here we show the need for an improvement on the algorithm. We discuss the sources of the problem, and we present an efficient way for choosing these hyperplanes which give way to multiple extension levels in the case of higher dimensional data. The standard Isolation Forest is a special case of the Extended Isolation Forest as we present it here. We find no appreciable difference in the rate of convergence nor in computational time between the standard Isolation Forest and EIF which highlights its potential as anomaly detection algorithm.
+Our method allows for the slicing of the data to be done using hyperplanes with random slopes which results in improved score maps. The consistency and reliability of the algorithm is much improved using this extension. This is briefly mentioned in [@liu2010detecting] although in the context of optimization for detection of anomaly clusters. Here we show the need for an improvement on the source algorithm to improve the scoring of anomalies and the robustness of the score maps especially around edges of nominal data. We discuss the sources of the problem, and we present an efficient way for choosing these hyperplanes which give way to multiple extension levels in the case of higher dimensional data. The standard Isolation Forest is therefore a special case of the Extended Isolation Forest as presented it here. We find no appreciable difference in the rate of convergence nor in computational time between the standard Isolation Forest and EIF which highlights its potential as anomaly detection algorithm.
 
 This method has been written completely in [Python](https://www.python.org/) and the only requirement is NumPy [@NumPy] and can be easily installed using `pip install eif` or directly from the source code located at [https://github.com/sahandha/eif](https://github.com/sahandha/eif) where we have also added some example Jupyter[@Kluyver2016] Notebooks and documented code on how to get started.
 
@@ -33,7 +33,7 @@ This method has been written completely in [Python](https://www.python.org/) and
 
 ![Example training data. a) Normally distributed cluster. b) Two normally distributed clusters. c) Sinusoidal data points with Gaussian noise.](Training.png)
 
-While various techniques exist for approaching anomaly detection, Isolation Forest [@Liu2008] is one with unique capabilities. This algorithm can readily work on high dimensional data, it is model free, and it scales well. It is therefore highly desirable and easy to use. However, looking at score maps for some basic example, we can see that the anomaly scores produced by the standard Isolation Forest are inconsistent. To see this we look at the three examples shown in Figure 1.
+While various techniques exist for approaching anomaly detection, Isolation Forest [@Liu2008] is one with unique capabilities. This algorithm can readily work on high dimensional data, it is model free, and it scales well. It is therefore highly desirable and easy to use. However, looking at score maps for some basic example, we can see that the anomaly scores produced by the standard Isolation Forest are inconsistent, . To see this we look at the three examples shown in Figure 1.
 
 
 In each case, we use the data to train our Isolation Forest. We then use the trained models to score a square grid of uniformly distributed data points, which results in score maps shown in Figure 2. Through the simplicity of the example data, we have an intuition about what the score maps should look like. For example, for the data shown in Figure 1a, we expect to see low anomaly scores in the center of the map, while the anomaly score should increase as we move radially away from the center. Similarly for the other figures.
@@ -151,9 +151,5 @@ Figure 7 shows a very simple example of anomalies and nominal points from a Sing
 
 We present an robust, open source extension to the Isolation Forest algorithm which produces accurate anomaly score maps. We provide the motivation behind this code and the comparison between the standard and the extended methods. Given the scalability of this method, this algorithm can be extended to work on distributed computing systems as shown in [@Hariri2018] and can be readily used in scientific applications to find anomalies in the data.
 
-
-
-# Acknowledgements
-MCK is supported by the National Science Foundation under Grant NSF AST 07-15036 and NSF AST 08-13543
 
 # References
