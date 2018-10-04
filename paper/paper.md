@@ -6,7 +6,7 @@ tags:
   - Anomaly Detection
 authors:
   - name: Sahand Hariri
-    orcid:
+    orcid: 0000-0003-0860-3300
     affiliation: 1
   - name: Matias Carrasco Kind
     orcid: 0000-0002-4802-3194
