@@ -55,7 +55,7 @@ archivePrefix = "arXiv",
 The pre-print article can be found [here](https://arxiv.org/abs/1811.021410)
 
 
-## Release
+## Releases
 
 ### v1.0.2
 #### 2018-OCT-01
