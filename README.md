@@ -52,7 +52,7 @@ archivePrefix = "arXiv",
   adsnote = {Provided by the SAO/NASA Astrophysics Data System}
 }
 ```
-The pre-print article can be found [here](https://arxiv.org/abs/1811.021410)
+The pre-print article can be found [here](https://arxiv.org/abs/1811.02141)
 
 
 ## Releases
