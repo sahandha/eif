@@ -59,9 +59,9 @@ class iForest(object):
     compute_paths(X_in)
         Computes the anomaly score for data X_in
     """
-    def __init__(self, X, ntrees,  sample_size, limit=None, ExtensionLevel=0):
+    def __init__(self, X, ntrees,  sample_size, limit=None, ExtensionLevel=0, OutRatio=0.0):
         """
-        iForest(X, ntrees,  sample_size, limit=None, ExtensionLevel=0)
+        iForest(X, ntrees,  sample_size, limit=None, ExtensionLevel=0, OutRatio=0.0)
         Initialize a forest by passing in training data, number of trees to be used and the subsample size.
 
         Parameters
@@ -76,6 +76,8 @@ class iForest(object):
             The maximum allowed tree depth. This is by default set to average length of unsucessful search in a binary tree.
         ExtensionLevel : int
             Specifies degree of freedom in choosing the hyperplanes for dividing up data. Must be smaller than the dimension n of the dataset.
+        OutRatio : float
+            The ratio of outliers in the training data. Should be between 0.0 and 0.5
         """
 
         self.ntrees = ntrees
@@ -93,7 +95,8 @@ class iForest(object):
             ix = rn.sample(range(self.nobjs), self.sample)
             X_p = X[ix]
             self.Trees.append(iTree(X_p, 0, self.limit, exlevel=self.exlevel))
-
+        self.OutRatio = OutRatio
+            
     def CheckExtensionLevel(self):
         """
         This function makes sure the extension level provided by the user does not exceed the dimension of the data. An exception will be raised in the case of a violation.
@@ -104,6 +107,39 @@ class iForest(object):
         if self.exlevel > dim-1:
             raise Exception("Your data has "+ str(dim) + " dimensions. Extension level can't be higher than " + str(dim-1) + ".")
 
+    def outlier_pred(self, X_in =None):
+        """
+        outlier_pred(X_in= None)
+        Predict outlier as '1' and nomal data as '0'
+        Parameter
+        ----------
+        X_in : list of list of floats
+                Data to be scored. iForest.Trees are used for computing the depth reached in each tree by each data point.
+        Returns
+        -------
+        Int
+                A data prediction label of '0' as normal data and '1' as outliers
+        """
+        if X_in is None:
+            X_in = self.X                                                     # X_in = dataset X
+        OutLabel = np.zeros(X_in.shape[0])
+        OutLabel[self.outlier_index(X_in)] = 1     # create the array with '0' for normal data and '1' for outliers 
+        return OutLabel   
+    
+    def outlier_index(self, X_in =None):
+        """
+        outlier_index(X_in= None)
+        Resutrn the index of data points that are outliers 
+        Parameter
+        ----------
+        X_in : list of list of floats
+                Data to be scored. iForest.Trees are used for computing the depth reached in each tree by each data point.
+        Returns
+        -------
+        int
+            Indeces of outliers
+        """
+            
     def compute_paths(self, X_in = None):
         """
         compute_paths(X_in = None)
