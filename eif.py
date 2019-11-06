@@ -139,6 +139,12 @@ class iForest(object):
         int
             Indeces of outliers
         """
+        if X_in is None:
+            X_in = self.X                                                       # X_in = dataset X
+        S = self.compute_paths(X_in)                                                 # anomaly score
+        Ssort = np.ss0=np.argsort(S)                                            # index of the ordered score (low to high) 
+        OutIndex = Ssort[-int(np.ceil(self.OutRatio * self.X.shape[0])):]       # the highest S score's indeces
+        return OutIndex    
             
     def compute_paths(self, X_in = None):
         """
