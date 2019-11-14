@@ -96,12 +96,6 @@ Here we provide the source code for the algorithm as well as documented example 
 ## Installation
 
 
-    pip install eif
-
-
-or directly from the repository
-
-
     pip install git+https://github.com/sahandha/eif.git
 
 
