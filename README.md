@@ -1,4 +1,4 @@
-<a href="https://github.com/sahandha/eif/releases/tag/v1.0.2"> <img src="https://img.shields.io/badge/release-v1.0.2-green.svg" alt="latest release" /></a><a href="https://pypi.org/project/eif/1.0.2/"><img src="https://img.shields.io/badge/pypi-v1.0.2-orange.svg" alt="pypi version"/></a><a href="https://doi.org/10.1109/TKDE.2019.2947676"><img src="https://img.shields.io/badge/DOI-10.1109%2FTKDE.2019.2947676-blue.svg"></a>
+<a href="https://github.com/sahandha/eif/releases/tag/v2.0.0"> <img src="https://img.shields.io/badge/release-v2.0.0-green.svg" alt="latest release" /></a><a href="https://pypi.org/project/eif/2.0.0/"><img src="https://img.shields.io/badge/pypi-v2.0.0-orange.svg" alt="pypi version"/></a><a href="https://doi.org/10.1109/TKDE.2019.2947676"><img src="https://img.shields.io/badge/DOI-10.1109%2FTKDE.2019.2947676-blue.svg"></a>
 
 ## Table of contents
 - [Extended Isolation Forest](#Extended-Isolation-Forest)

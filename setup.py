@@ -23,8 +23,8 @@ exec(open('version.py').read())
 setup(
     name='eif',
     version=__version__,
-    author='Matias Carrasco Kind , Sahand Hariri',
-    author_email='mcarras2@illinois.edu , sahandha@gmail.com',
+    author='Matias Carrasco Kind , Sahand Hariri, Seng Keat Yeoh',
+    author_email='mcarras2@illinois.edu',
     cmdclass={'build_ext': build_ext},
     ext_modules=[Extension("eif",
                  sources=["_eif.pyx", "eif.cxx"],
@@ -36,7 +36,7 @@ setup(
     packages=[],
     license='License.txt',
     description='Extended Isolation Forest for anomaly detection',
-    long_description=read('README.md'),
+    #long_description=read('README.md'),
     url='https://github.com/sahandha/eif',
-    install_requires=["numpy"],
+    install_requires=["numpy", "cython"],
 )
