@@ -144,8 +144,13 @@ month={},}
 
 ## Releases
 
+### v2.0.0
+#### 2019-NOV-14
+- Convert code into C++ with using cython. Much faster and efficient forest generation and scoring procedures
+
 ### v1.0.2
 #### 2018-OCT-01
+- [Release](https://github.com/sahandha/eif/releases/tag/v1.0.2)
 - Added documentation, examples and software paper
 
 ### v1.0.1
