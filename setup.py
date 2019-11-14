@@ -32,7 +32,7 @@ setup(
                  extra_compile_args=['-Wcpp'],
                  language="c++")],
     scripts=[],
-    py_modules=['eifb', 'version'],
+    py_modules=['eif_old', 'version'],
     packages=[],
     license='License.txt',
     description='Extended Isolation Forest for anomaly detection',
