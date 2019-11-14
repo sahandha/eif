@@ -61,8 +61,8 @@ where $n$ is the normal vector, $p$ is the random intercept. $x$ is a give data 
 
 Figure 5 shows the resulting branch cuts int he domain for each of our examples.
 
-![Same as Figure 5 but using Extended Isolation Forest](paper/Ex1.png)
-**Figure 4**: Same as Figure 5 but using Extended Isolation Forest
+![Same as Figure 4 but using Extended Isolation Forest](paper/Ex1.png)
+**Figure 5**: Same as Figure 5 but using Extended Isolation Forest
 
 We can see that the region is divided much more uniformly, and without the bias introducing effects of the coordinate system. As in the case of the standard Isolation Forest, the anomaly score is computed by the aggregated depth that a given point reaches on each $iTree$. The depth computation is defined by the Class `PathFactor()` in the code and is given by Algorithm 3, with a normalizing factor defined as the average depth in an unsuccessful search in a Binary Search Tree (BST):
 \begin{align}
@@ -77,12 +77,12 @@ where $E(h(x))$ is the average of the depths the point reached in all trees.
 As we see in Figure 6, these modifications completely fix the issue with the score maps that we saw before and produce reliable results. Clearly, these score maps are a much better representation of anomaly score distributions.
 
 ![Score maps using the Extended Isolation Forest.](paper/scores_maps_extended.png)
-**Figure 5**: Score maps using the Extended Isolation Forest.
+**Figure 6**: Score maps using the Extended Isolation Forest.
 
 Figure 7 shows a very simple example of anomalies and nominal points from a Single blob example as shown in Figure 1a. It also shows the distribution of the anomaly scores which can be used to make hard cuts on the definition of anomalies or even assign probabilities to each point.
 
 ![a) Shows the dataset used, some sample anomalous data points discovered using the algorithm are highlighted in black. We also highlight some nominal points in red. In b), we have the distribution of anomaly scores obtained by the algorithm.](paper/example.png)
-
+**Figure 7**: a) Shows the dataset used, some sample anomalous data points discovered using the algorithm are highlighted in black. We also highlight some nominal points in red. In b), we have the distribution of anomaly scores obtained by the algorithm.
 
 
 # Extended Isolation Forest
