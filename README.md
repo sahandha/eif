@@ -1,27 +1,34 @@
 <a href="https://github.com/sahandha/eif/releases/tag/v1.0.2"> <img src="https://img.shields.io/badge/release-v1.0.2-blue.svg" alt="latest release" /></a><a href="https://pypi.org/project/eif/1.0.2/"><img src="https://img.shields.io/badge/pypi-v1.0.2-orange.svg" alt="pypi version"/></a>
 
-# Table of contents
-- [Summary](#Summary)
-- [Motivation](#Motivation)
+## Table of contents
+- [Extended Isolation Forest](#Extended-Isolation-Forest)
+    - [Summary](#Summary)
+    - [Motivation](#Motivation)
+    - [Isolation Forest](#Isolation-Forest)
+    - [Extension](#Extension)
+    - [The Code](#The-Code)
 - [Installation](#Installation)
+    - [Requirements](#Requirements)
 - [Use](#Use)
 - [Citation](#Citation)
 - [Releases](#Releases)
 
 
-# Summary
+## Extended Isolation Forest
 
-The problem of anomaly detection has wide range of applications in various fields and scientific applications. Anomalous data can have as much scientific value as normal data or in some cases even more, and it is of vital importance to have robust, fast and reliable algorithms to detect and flag such anomalies. In this paper, we present an extension to the model-free anomaly detection algorithm, Isolation Forest [@Liu2008; @Liu2012]. This extension, named Extended Isolation Forest (EIF), improves the consistency and reliability of the anomaly score produced by standard methods for a given data point. We show that the standard Isolation Forest produces inconsistent anomaly score maps, and that these score maps suffer from an artifact produced as a result of how the criteria for branching operation of the binary tree is selected.
+### Summary
 
-Our method allows for the slicing of the data to be done using hyperplanes with random slopes which results in improved score maps. The consistency and reliability of the algorithm is much improved using this extension. This is briefly mentioned in [@liu2010detecting] although in the context of optimization for detection of anomaly clusters. Here we show the need for an improvement on the source algorithm to improve the scoring of anomalies and the robustness of the score maps especially around edges of nominal data. We discuss the sources of the problem, and we present an efficient way for choosing these hyperplanes which give way to multiple extension levels in the case of higher dimensional data. The standard Isolation Forest is therefore a special case of the Extended Isolation Forest as presented it here. We find no appreciable difference in the rate of convergence nor in computational time between the standard Isolation Forest and EIF which highlights its potential as anomaly detection algorithm.
+The problem of anomaly detection has wide range of applications in various fields and scientific applications. Anomalous data can have as much scientific value as normal data or in some cases even more, and it is of vital importance to have robust, fast and reliable algorithms to detect and flag such anomalies. Here, we present an extension to the model-free anomaly detection algorithm, Isolation Forest [Liu2008](https://cs.nju.edu.cn/zhouzh/zhouzh.files/publication/icdm08b.pdf). This extension, named Extended Isolation Forest (EIF), improves the consistency and reliability of the anomaly score produced by standard methods for a given data point. We show that the standard Isolation Forest produces inconsistent anomaly score maps, and that these score maps suffer from an artifact produced as a result of how the criteria for branching operation of the binary tree is selected.
+
+Our method allows for the slicing of the data to be done using hyperplanes with random slopes which results in improved score maps. The consistency and reliability of the algorithm is much improved using this extension. Here we show the need for an improvement on the source algorithm to improve the scoring of anomalies and the robustness of the score maps especially around edges of nominal data. We discuss the sources of the problem, and we present an efficient way for choosing these hyperplanes which give way to multiple extension levels in the case of higher dimensional data. The standard Isolation Forest is therefore a special case of the Extended Isolation Forest as presented it here.
 
 
-# Motivation
+### Motivation
 
 ![Example training data. a) Normally distributed cluster. b) Two normally distributed clusters. c) Sinusoidal data points with Gaussian noise.](paper/Training.png)
 **Figure 1**: Example training data. a) Normally distributed cluster. b) Two normally distributed clusters. c) Sinusoidal data points with Gaussian noise.
 
-While various techniques exist for approaching anomaly detection, Isolation Forest [@Liu2008] is one with unique capabilities. This algorithm can readily work on high dimensional data, it is model free, and it scales well. It is therefore highly desirable and easy to use. However, looking at score maps for some basic example, we can see that the anomaly scores produced by the standard Isolation Forest are inconsistent, . To see this we look at the three examples shown in Figure 1.
+While various techniques exist for approaching anomaly detection, Isolation Forest [Liu2008](https://cs.nju.edu.cn/zhouzh/zhouzh.files/publication/icdm08b.pdf) is one with unique capabilities. This algorithm can readily work on high dimensional data, it is model free, and it scales well. It is therefore highly desirable and easy to use. However, looking at score maps for some basic example, we can see that the anomaly scores produced by the standard Isolation Forest are inconsistent, . To see this we look at the three examples shown in Figure 1.
 
 
 In each case, we use the data to train our Isolation Forest. We then use the trained models to score a square grid of uniformly distributed data points, which results in score maps shown in Figure 2. Through the simplicity of the example data, we have an intuition about what the score maps should look like. For example, for the data shown in Figure 1a, we expect to see low anomaly scores in the center of the map, while the anomaly score should increase as we move radially away from the center. Similarly for the other figures.
@@ -34,9 +41,9 @@ Looking at the score maps produced by the standard Isolation Forest shown in Fig
 
 We present a brief description of how Isolation Forest works in order to explain our extension.
 
-# Isolation Forest
+### Isolation Forest
 
- Given a dataset of dimension $N$, the algorithm chooses a random sub-sample of data to construct a binary tree. The branching process of the tree occurs by selecting a random dimension $x_i$ with $i$ in $\{1,2,...,N\}$ of the data (a single variable). It then selects a random value $v$ within the minimum and maximum values in that dimension. If a given data point possesses a value smaller than $v$ for dimension $x_i$, then that point is sent to the left branch, otherwise it is sent to the right branch. In this manner the data on the current node of the tree is split in two. This process of branching is performed recursively over the dataset until a single point is isolated, or a predetermined depth limit is reached. The process begins again with a new random sub-sample to build another randomized tree. After building a large ensemble of trees, i.e. a forest, the training is complete. The creation of the forest is summarized in Algorithm 1 and the Class `iForest()` in the code.
+ Given a dataset of dimension *N*, the algorithm chooses a random sub-sample of data to construct a binary tree. The branching process of the tree occurs by selecting a random dimension *x_i* with *i* in *{1,2,...,N}* of the data (a single variable). It then selects a random value *v* within the minimum and maximum values in that dimension. If a given data point possesses a value smaller than $v$ for dimension *x_i*, then that point is sent to the left branch, otherwise it is sent to the right branch. In this manner the data on the current node of the tree is split in two. This process of branching is performed recursively over the dataset until a single point is isolated, or a predetermined depth limit is reached. The process begins again with a new random sub-sample to build another randomized tree. After building a large ensemble of trees, i.e. a forest, the training is complete.
 
 
  During the scoring step, a new candidate data point (or one chosen from the data used to create the trees) is run through all the trees, and an ensemble anomaly score is assigned based on the depth the point reaches in each tree. Figure 3 shows an schematic example of a tree and a forest plotted radially.  
@@ -50,29 +57,18 @@ It turns out the splitting process described above is the main source of the bia
 ![Splitting of data in the domain during the process of construction of one tree.](paper/Ex0.png)
 **Figure 4**: Splitting of data in the domain during the process of construction of one tree.
 
-The branching process shouldn't be affected by the choice of our coordinate system.
 
-# Extended Isolation Forest
+### Extension
 
-The Extended Isolation Forest remedies this problem by allowing the branching process to occur in every direction. The process of choosing branch cuts is altered so that at each node, instead of choosing a random feature along with a random value, we choose a random normal vector along with a random intercept point. The criteria of splitting the node in the binary tree is determined by the equation:
-
-
-where $n$ is the normal vector, $p$ is the random intercept. $x$ is a give data point. If the inequality is satisfied, point $x$ is passed down to the left branch of the tree. Otherwise, it is passed down to the right branch as explained in Algorithm 2. Each tree is a Python Class `iTree()` in the code.
+The Extended Isolation Forest remedies this problem by allowing the branching process to occur in every direction. The process of choosing branch cuts is altered so that at each node, instead of choosing a random feature along with a random value, we choose a random normal vector along with a random intercept point.
 
 Figure 5 shows the resulting branch cuts int he domain for each of our examples.
 
 ![Same as Figure 4 but using Extended Isolation Forest](paper/Ex1.png)
-**Figure 5**: Same as Figure 5 but using Extended Isolation Forest
+**Figure 5**: Same as Figure 4 but using Extended Isolation Forest
 
-We can see that the region is divided much more uniformly, and without the bias introducing effects of the coordinate system. As in the case of the standard Isolation Forest, the anomaly score is computed by the aggregated depth that a given point reaches on each $iTree$. The depth computation is defined by the Class `PathFactor()` in the code and is given by Algorithm 3, with a normalizing factor defined as the average depth in an unsuccessful search in a Binary Search Tree (BST):
-\begin{align}
-c(n) = 2H(n-1) - (2(n-1)/n)
-\end{align}
+We can see that the region is divided much more uniformly, and without the bias introducing effects of the coordinate system. As in the case of the standard Isolation Forest, the anomaly score is computed by the aggregated depth that a given point reaches on each `iTree`.
 
-where $H(i)$ is the harmonic number and can be estimated by $\ln(i) + 0.5772156649$ (Euler's constant) [@Liu2012] and $n$ is the number of points used in he construction of the trees. The final anomaly score $s$ for a given point $x$ is given by :
-
-
-where $E(h(x))$ is the average of the depths the point reached in all trees.
 
 As we see in Figure 6, these modifications completely fix the issue with the score maps that we saw before and produce reliable results. Clearly, these score maps are a much better representation of anomaly score distributions.
 
@@ -85,7 +81,7 @@ Figure 7 shows a very simple example of anomalies and nominal points from a Sing
 **Figure 7**: a) Shows the dataset used, some sample anomalous data points discovered using the algorithm are highlighted in black. We also highlight some nominal points in red. In b), we have the distribution of anomaly scores obtained by the algorithm.
 
 
-# Extended Isolation Forest
+### The Code
 
 This is a simple package implementation for the Extended Isolation Forest method described in this [paper](https://doi.org/10.1109/TKDE.2019.2947676). It is an improvement on the original algorithm Isolation Forest which is described (among other places) in this [paper](https://cs.nju.edu.cn/zhouzh/zhouzh.files/publication/icdm08b.pdf) for detecting anomalies and outliers for multidimensional data point distributions.
 
