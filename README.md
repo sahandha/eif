@@ -27,7 +27,7 @@ Our method allows for the slicing of the data to be done using hyperplanes with 
 
 ### Motivation
 
-![Example training data. a) Normally distributed cluster. b) Two normally distributed clusters. c) Sinusoidal data points with Gaussian noise.](paper/Training.png)
+![Example training data. a) Normally distributed cluster. b) Two normally distributed clusters. c) Sinusoidal data points with Gaussian noise.](figures/Training.png)
 
 **Figure 1**: Example training data. a) Normally distributed cluster. b) Two normally distributed clusters. c) Sinusoidal data points with Gaussian noise.
 
@@ -39,27 +39,26 @@ In each case, we use the data to train our Isolation Forest. We then use the tra
 Looking at the score maps produced by the standard Isolation Forest shown in Figure 2, we can clearly see the inconsistencies in the scores. While we can clearly see a region of low anomaly score in the center in Figure 2a, we can also see regions aligned with x and y axes passing through the origin that have lower anomaly scores compared to the four corners of the region. Based on our intuitive understanding of the data, this cannot be correct. A similar phenomenon is observed in Figure 2b. In this case, the problem is amplified. Since there are two clusters, the artificially low anomaly score regions intersect close to points (0,0) and (10,10), and create low anomaly score regions where there is no data. It is immediately obvious how this can be problematic. As for the third example, figure 2c shows that the structure of the data is completely lost. The sinusoidal shape is essentially treated as one rectangular blob.
 
 
-![Score maps using the Standard Isolation Forest for the points from Figure 1. We can see the bands and artifacts on these maps](paper/scores_maps.png)
+![Score maps using the Standard Isolation Forest for the points from Figure 1. We can see the bands and artifacts on these maps](figures/scores_maps.png)
 
 **Figure 2**: Score maps using the Standard Isolation Forest for the points from Figure 1. We can see the bands and artifacts on these maps
 
-We present a brief description of how Isolation Forest works in order to explain our extension.
 
 ### Isolation Forest
 
- Given a dataset of dimension *N*, the algorithm chooses a random sub-sample of data to construct a binary tree. The branching process of the tree occurs by selecting a random dimension *x_i* with *i* in *{1,2,...,N}* of the data (a single variable). It then selects a random value *v* within the minimum and maximum values in that dimension. If a given data point possesses a value smaller than $v$ for dimension *x_i*, then that point is sent to the left branch, otherwise it is sent to the right branch. In this manner the data on the current node of the tree is split in two. This process of branching is performed recursively over the dataset until a single point is isolated, or a predetermined depth limit is reached. The process begins again with a new random sub-sample to build another randomized tree. After building a large ensemble of trees, i.e. a forest, the training is complete.
+ Given a dataset of dimension *N*, the algorithm chooses a random sub-sample of data to construct a binary tree. The branching process of the tree occurs by selecting a random dimension *x_i* with *i* in *{1,2,...,N}* of the data (a single variable). It then selects a random value *v* within the minimum and maximum values in that dimension. If a given data point possesses a value smaller than *v* for dimension *x_i*, then that point is sent to the left branch, otherwise it is sent to the right branch. In this manner the data on the current node of the tree is split in two. This process of branching is performed recursively over the dataset until a single point is isolated, or a predetermined depth limit is reached. The process begins again with a new random sub-sample to build another randomized tree. After building a large ensemble of trees, i.e. a forest, the training is complete.
 
 
  During the scoring step, a new candidate data point (or one chosen from the data used to create the trees) is run through all the trees, and an ensemble anomaly score is assigned based on the depth the point reaches in each tree. Figure 3 shows an schematic example of a tree and a forest plotted radially.  
 
-![a) Shows an example tree formed from the example data while b) shows the forest generated where each tree is represented by a radial line from the center to  the  outer  circle.  Anomalous  points  (shown  in  red)  are  isolated  very  quickly,which means they reach shallower depths than nominal points (shown in blue).](paper/example_if.png)
+![a) Shows an example tree formed from the example data while b) shows the forest generated where each tree is represented by a radial line from the center to  the  outer  circle.  Anomalous  points  (shown  in  red)  are  isolated  very  quickly,which means they reach shallower depths than nominal points (shown in blue).](figures/example_if.png)
 
 **Figure 3**: a) Shows an example tree formed from the example data while b) shows the forest generated where each tree is represented by a radial line from the center to  the  outer  circle.  Anomalous  points  (shown  in  red)  are  isolated  very  quickly,which means they reach shallower depths than nominal points (shown in blue).
 
 It turns out the splitting process described above is the main source of the bias observed in the score maps. Figure 4 shows the process described above for each one of the examples considered thus far. The branch cuts are always parallel to the axes, and as a result over construction of many trees, regions in the domain that don't occupy any data points receive superfluous branch cuts.
 
 
-![Splitting of data in the domain during the process of construction of one tree.](paper/Ex0.png)
+![Splitting of data in the domain during the process of construction of one tree.](figures/Ex0.png)
 
 **Figure 4**: Splitting of data in the domain during the process of construction of one tree.
 
@@ -70,7 +69,7 @@ The Extended Isolation Forest remedies this problem by allowing the branching pr
 
 Figure 5 shows the resulting branch cuts int he domain for each of our examples.
 
-![Same as Figure 4 but using Extended Isolation Forest](paper/Ex1.png)
+![Same as Figure 4 but using Extended Isolation Forest](figures/Ex1.png)
 
 **Figure 5**: Same as Figure 4 but using Extended Isolation Forest
 
@@ -79,13 +78,13 @@ We can see that the region is divided much more uniformly, and without the bias 
 
 As we see in Figure 6, these modifications completely fix the issue with the score maps that we saw before and produce reliable results. Clearly, these score maps are a much better representation of anomaly score distributions.
 
-![Score maps using the Extended Isolation Forest.](paper/scores_maps_extended.png)
+![Score maps using the Extended Isolation Forest.](figures/scores_maps_extended.png)
 
 **Figure 6**: Score maps using the Extended Isolation Forest.
 
 Figure 7 shows a very simple example of anomalies and nominal points from a Single blob example as shown in Figure 1a. It also shows the distribution of the anomaly scores which can be used to make hard cuts on the definition of anomalies or even assign probabilities to each point.
 
-![a) Shows the dataset used, some sample anomalous data points discovered using the algorithm are highlighted in black. We also highlight some nominal points in red. In b), we have the distribution of anomaly scores obtained by the algorithm.](paper/example.png)
+![a) Shows the dataset used, some sample anomalous data points discovered using the algorithm are highlighted in black. We also highlight some nominal points in red. In b), we have the distribution of anomaly scores obtained by the algorithm.](figures/example.png)
 
 **Figure 7**: a) Shows the dataset used, some sample anomalous data points discovered using the algorithm are highlighted in black. We also highlight some nominal points in red. In b), we have the distribution of anomaly scores obtained by the algorithm.
 

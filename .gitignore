@@ -1,9 +1,9 @@
 .ipynb_checkpoints*
-paper/images/
-paper/other_files/
-paper/Makefile
-paper/joss-logo.png
-paper/latex.template
+figures/images/
+figures/other_files/
+figures/Makefile
+figures/joss-logo.png
+figures/latex.template
 *.pyc
 build/
 dist/
