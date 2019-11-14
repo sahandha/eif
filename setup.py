@@ -35,8 +35,10 @@ setup(
     py_modules=['eif_old', 'version'],
     packages=[],
     license='License.txt',
+    include_package_data=True,
     description='Extended Isolation Forest for anomaly detection',
-    #long_description=read('README.md'),
+    long_description=read('README.md'),
+    long_description_content_type='text/markdown',
     url='https://github.com/sahandha/eif',
     install_requires=["numpy", "cython"],
 )
