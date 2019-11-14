@@ -8,3 +8,5 @@ paper/latex.template
 build/
 dist/
 eif.egg-info/
+_eif.cpp
+*.so
