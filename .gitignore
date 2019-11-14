@@ -10,3 +10,4 @@ dist/
 eif.egg-info/
 _eif.cpp
 *.so
+cleanup.sh
