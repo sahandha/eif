@@ -119,6 +119,7 @@ See these notebooks for examples on how to use it
 
 - [Basics](Notebooks/EIF.ipynb)
 - [3D Example](Notebooks/general_3D_examples.ipynb)
+- [Comparison cxx/py](Notebooks/comparison_py_cxx.ipynb)
 - [Tree visualizations](Notebooks/TreeVisualization.ipynb)
 
 ## Citation
@@ -146,7 +147,9 @@ month={},}
 
 ### v2.0.2
 #### 2019-NOV-14
-- Convert code into C++ with using cython. Much faster and efficient forest generation and scoring procedures
+- Convert code into C++ with using cython. 
+- Much [faster](Notebooks/comparison_py_cxx.ipynb) and efficient forest generation and scoring procedures.
+- Previous implementation renamed, use `import eif_old` to use old version 
 
 ### v1.0.2
 #### 2018-OCT-01
