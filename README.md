@@ -16,7 +16,8 @@
 
 ## Extended Isolation Forest
 
-This is a simple package implementation for the Extended Isolation Forest method described in this [paper](https://doi.org/10.1109/TKDE.2019.2947676). It is an improvement on the original algorithm Isolation Forest which is described (among other places) in this [paper](https://cs.nju.edu.cn/zhouzh/zhouzh.files/publication/icdm08b.pdf) for detecting anomalies and outliers for multidimensional data point distributions.
+This is a simple Python implementation for the Extended Isolation Forest method described in this 
+(https://doi.org/10.1109/TKDE.2019.2947676). It is an improvement on the original algorithm Isolation Forest which is described (among other places) in this [paper](https://cs.nju.edu.cn/zhouzh/zhouzh.files/publication/icdm08b.pdf) for detecting anomalies and outliers for multidimensional data point distributions. An R wrapper around the core Python implementation can be found [here](https://github.com/ergodiclife/eif).
 
 ### Summary
 
@@ -104,6 +105,7 @@ or directly from the repository
 
     pip install git+https://github.com/sahandha/eif.git
 
+Alternatively, you can install the `eif` R package from [here](https://github.com/ergodiclife/eif), which provides an R wrapper around the core Python implementation.
 
 ### Requirements
 
