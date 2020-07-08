@@ -5,6 +5,7 @@
 #include <random>
 #include <algorithm>
 #include <unordered_set>
+#include <string>
 
 #define EULER_CONSTANT 0.5772156649
 

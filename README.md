@@ -115,6 +115,26 @@ Alternatively, you can install the `eif` R package from [here](https://github.co
 No extra requirements are needed.
 In addition, it also contains means to draw the trees created using the [igraph](http://igraph.org/) library. See the example for tree visualizations.
 
+## Conda Environment instructions for Windows 10
+
+Before creating the conda environment make sure the Microsoft Visual C++ 14.0 build tools is installed.
+1. Download the installer from [Visual Studio website](https://visualstudio.microsoft.com/visual-cpp-build-tools/).
+2. Select `C++ build tools` from the main menu
+
+Then from the PowerShell 
+```
+(base)> cd eif
+(base)> conda env create -f conda_env.yml
+(base)> conda acitvate eif-devenv
+(eif-devenv)> pip install . 
+```
+(Optional) In case you want to use the Jupyter notebooks:
+```
+(eif-devenv)> conda install jupyter matplotlib scipy seaborn scikit-learn
+(eif-devenv)> cd Notebooks
+(eif-devenv)> jupyter notebook
+```
+
 ## Use
 
 See these notebooks for examples on how to use it
