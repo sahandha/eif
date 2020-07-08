@@ -1,0 +1,8 @@
+name: eif-devenv
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python==3.7
+  - cython==0.29.20
+  - numpy==1.18.5
