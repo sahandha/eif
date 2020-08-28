@@ -9,23 +9,69 @@ __author__ = 'Matias Carrasco Kind & Sahand Hariri (rewritten by Leszek Pryszcz)
 import numpy as np
 import os
 from version import __version__
+from numba import jit#, float32, int32
 
+@jit
 def c_factor(n):
+    """Return average path length of unsuccesful search in a binary search tree
+    given n points.
     """
-    Average path length of unsuccesful search in a binary search tree given n points
-    
-    Parameters
-    ----------
-    n : int
-        Number of data points for the BST.
-
-    Returns
-    -------
-    float
-        Average path length of unsuccesful search in a BST
-    """
-    #if n<2: return 0
     return 2.0*(np.log(n-1)+0.5772156649) - (2.0*(n-1.)/(n*1.0))
+
+@jit
+def minmax(x):
+    """np.min(x, axis=0), np.max(x, axis=0) for 2D array but faster"""
+    m, n = len(x), len(x[0])
+    mi, ma = np.empty(n), np.empty(n)
+    mi[:] = ma[:] = x[0]
+    for i in range(1, m):
+        for j in range(n):
+            if x[i, j]>ma[j]: ma[j] = x[i, j]
+            elif x[i, j]<mi[j]: mi[j] = x[i, j]
+    return mi, ma
+
+@jit
+def split(x, w):
+    """x[w], x[~w] but faster"""
+    k = l = 0
+    a, b = np.empty_like(x), np.empty_like(x)
+    for i in range(len(x)):
+        if w[i]: 
+            a[k] = x[i]
+            k += 1
+        else:
+            b[l] = x[i]
+            l += 1
+    return a[:k], b[:l]
+
+@jit
+def scale_minmax(a, mi, ma):
+    """Return a scaled by mi-ma"""
+    return a * (ma-mi) + mi
+
+@jit
+def dot(p, n):
+    """Return p.dot(n)"""
+    return p.dot(n)
+
+@jit
+def update_nodes(ni, w, limit, e):
+    """Update node index base on w, limit and e"""
+    r = 2**(limit-e)
+    for i in range(len(ni)):
+        if w[i]: ni[i] += 1
+        else: ni[i] += r
+    return ni
+
+@jit
+def score_false(e, sel):
+    """Return scores for internal-terminal nodes"""
+    return e*(~sel).sum()
+
+@jit
+def score_terminal(limit, ni, size):
+    """Return limit*len(ni) + c_factor(size[size>1]).sum()"""
+    return limit*len(ni) + c_factor(size[size>1]).sum()
 
 class iForest(object):
     """
@@ -67,20 +113,17 @@ class iForest(object):
         self.sample = sample
         self.limit = limit
         self.ntrees = ntrees
-        self.compute_paths = self.score_samples
+        self.compute_paths = self.score_samples#_using_childs
         
     def fit(self, X):
-        """ Fit the ensemble of trees on data from X. 
+        """Return iForest trained on data from X. 
 
         Parameters
         ----------
         X: 2D array (samples, features)
             Data to be trained on.
-        
-        Returns
-        -------
-        iForest trained on dataset X. 
         """
+        #X = X.astype(dtype="f8")
         # initialise variables based on X
         self.sample = min(self.sample, X.shape[0])
         self.dim = X.shape[1]
@@ -93,57 +136,122 @@ class iForest(object):
         if not self.limit:
             self.limit = int(np.ceil(np.log2(self.sample)))
         # sample from normal distribution in order to save time later
-        maxtreei = 2**(self.limit+1)-1
-        self.normal = np.random.normal(0, 1, size=(self.ntrees, maxtreei, self.dim))
-        self.uniform = np.random.uniform(size=(self.ntrees, maxtreei, self.dim))
+        maxnodes = 2**(self.limit+1)-1
+        self.rng = np.random.default_rng()
+        self.normal = np.random.normal(0, 1, size=(self.ntrees, maxnodes, self.dim))
+        self.uniform = np.random.uniform(size=(self.ntrees, maxnodes, self.dim))
         if self.dim-self.exlevel-1: # shit, this may have replacements :/
-            self.choice = np.random.choice(self.dim, size=(self.ntrees, maxtreei, self.dim-self.exlevel-1))
+            self.choice = np.random.choice(self.dim, size=(self.ntrees, maxnodes, self.dim-self.exlevel-1))#.astype(dtype="f4")
         # populate trees
-        dtype = [("n", "%sf4"%self.dim), ("pdotn", "f4"), ("left", "u2"), ("right", "u2"), ("size", "u2")] 
-        self.trees = np.zeros((self.ntrees, maxtreei), dtype=dtype)
-        #idx = np.random.choice(X.shape[0], (self.ntrees, self.sample))
-        for i in range(self.ntrees):
-            self.treei = i
-            self.nodei = -1
-            self.populate_nodes(X[np.random.choice(X.shape[0], self.sample, replace=False)])
+        dtype = [("n", "%sf4"%self.dim), ("pdotn", "f4"), ("size", "u2")]#, ("left", "u2"), ("right", "u2")]
+        self.trees = np.zeros((self.ntrees, maxnodes), dtype=dtype)
+        for treei in range(self.ntrees): 
+            idx = np.random.choice(X.shape[0], self.sample, replace=False)
+            self.populate_nodes(X[idx], treei)
         # clean-up
-        del self.treei, self.nodei, self.uniform, self.normal
+        del self.normal, self.uniform
         if self.dim-self.exlevel-1: del self.choice
         return self
 
-    def populate_nodes(self, X, e=0):
-        """Builds the tree recursively from a given node (e).
-        By default starts from root note (e=0)
+    def populate_nodes(self, X, treei, nodei=0, e=0):
+        """Builds the tree recursively from a given node (e). 
+        By default starts from root note (e=0) and make all trees symmetrical. 
         """
-        self.nodei += 1
         # for terminal nodes store only the size of dataset at final split
         if e==self.limit or len(X)<2:
-            self.trees["size"][self.treei, self.nodei] = len(X)
-            # and make sure all trees have nodes in identical positions/order in the array
-            if e<self.limit: self.nodei += 2**(1+self.limit-e)-2
+            self.trees["size"][treei, nodei] = len(X)
         # for internal nodes store everything
         else:
             # A random normal vector picked form a uniform n-sphere. Note that in order to pick uniformly from n-sphere, we need to pick a random normal for each component of this vector.
-            n = self.normal[self.treei, self.nodei]
+            n = self.normal[treei, nodei]
             # Pick the indices for which the normal vector elements should be set to zero acccording to the extension level.
             if self.dim-self.exlevel-1:
-                n[self.choice[self.treei, self.nodei]] = 0
+                n[self.choice[treei, nodei]] = 0
             # Picking a random intercept point for the hyperplane splitting data.
-            p = self.uniform[self.treei, self.nodei]*(X.max(axis=0)-X.min(axis=0)) + X.min(axis=0)
-            pdotn = p.dot(n) # calculating pdotn here will make classification faster and take less space to store
+            mi, ma = minmax(X) # much faster than X.min(axis=0), X.max(axis=0)
+            # calculating pdotn here will make classification faster and take less space to store
+            pdotn = dot(scale_minmax(self.uniform[treei, nodei], mi, ma), n)
             # Criteria that determines if a data point should go to the left or right child node.
-            w = X.dot(n) < pdotn
-            # add left nodes
-            idx = self.nodei
-            nodeL = self.nodei+1
-            self.populate_nodes(X[w], e+1)
-            # add right nodes
-            nodeR = self.nodei+1
-            self.populate_nodes(X[~w], e+1)
-            # finally store current node
-            self.trees[self.treei, idx] = n, pdotn, nodeL, nodeR, len(X)
+            w = X.dot(n) < pdotn # here X.dot(n) uses BLAS so no need to optimise ;)
+            # store current node
+            self.trees[treei, nodei] = n, pdotn, len(X)
+            # add left & right node
+            a, b = split(X, w) # faster than X[~w], X[w]
+            self.populate_nodes(a, treei, nodei+1, e+1)
+            self.populate_nodes(b, treei, nodei+2**(self.limit-e), e+1) #2**(self.limit-e)
 
     def score_samples(self, X):
+        """
+        Compute anomaly scores for all data points in a dataset X. 
+
+        ----------
+        X: 2D array (samples, features)
+            Data to be scored on. 
+
+        Returns
+        -------
+        S: 1D array (X.shape[0])
+            Anomaly scores calculated for all samples from all trees. 
+        """
+        # this will store scores
+        S = np.zeros(X.shape[0])
+        trees = self.trees
+        n, pdotn, sizes = trees["n"], trees["pdotn"], trees["size"]
+        # iterate over samples
+        for xi in range(X.shape[0]):
+            ni = np.zeros(len(trees), dtype='int')
+            w = X[xi].dot(n[:, 0].T) < pdotn[:, 0]
+            ni = update_nodes(ni, w, self.limit, 0)
+            tidx = np.arange(trees.shape[0])
+            for e in range(1, self.limit):
+                w = X[xi].dot(n[tidx, ni].T) < pdotn[tidx, ni]
+                ni = update_nodes(ni, w, self.limit, e)
+                sel = sizes[tidx, ni]>1
+                S[xi] += score_false(e, sel) #e*(~sel).sum()
+                tidx, ni = tidx[sel], ni[sel]
+            # the size matters only at terminal nodes
+            size = sizes[tidx, ni]
+            S[xi] += score_terminal(self.limit, ni, size) #self.limit*len(ni) + c_factor(size[size>1]).sum()
+        # calculate anomaly scores
+        S = np.power(2, -S / len(trees) / c_factor(self.sample))
+        return S
+    
+'''
+    def populate_nodes(self, X, treei, nodei=0, e=0):
+        """Builds the tree recursively from a given node (e). 
+        By default starts from root note (e=0) and make all trees symmetrical. 
+        """
+        # for terminal nodes store only the size of dataset at final split
+        if e==self.limit or len(X)<2:
+            self.trees["size"][treei, nodei] = len(X)
+            # and make sure all trees have nodes in identical positions/order in the array
+            if e<self.limit: nodei += 2**(1+self.limit-e)-2 # that's only needed for children-less designs
+        # for internal nodes store everything
+        else:
+            # A random normal vector picked form a uniform n-sphere. Note that in order to pick uniformly from n-sphere, we need to pick a random normal for each component of this vector.
+            n = self.normal[treei, nodei]
+            # Pick the indices for which the normal vector elements should be set to zero acccording to the extension level.
+            if self.dim-self.exlevel-1:
+                n[self.choice[treei, nodei]] = 0
+            # Picking a random intercept point for the hyperplane splitting data.
+            mi, ma = minmax(X) # much faster than X.min(axis=0), X.max(axis=0)
+            # calculating pdotn here will make classification faster and take less space to store
+            pdotn = dot(scale_minmax(self.uniform[treei, nodei], mi, ma), n)
+            # Criteria that determines if a data point should go to the left or right child node.
+            w = X.dot(n) < pdotn # here X.dot(n) uses BLAS so no need to optimise ;)
+            # add left nodes
+            this_nodei = nodei
+            nodeL = nodei+1
+            a, b = split(X, w) # faster than X[~w], X[w]
+            nodei = self.populate_nodes(a, treei, nodeL, e+1) # X[w]
+            # add right nodes
+            nodeR = nodei+1
+            nodei = self.populate_nodes(b, treei, nodeR, e+1) # X[~w]
+            # finally store current node
+            self.trees[treei, this_nodei] = n, pdotn, len(X), nodeL, nodeR
+        return nodei
+
+    def score_samples_using_childs(self, X):
         """
         Compute anomaly scores for all data points in a dataset X. 
 
@@ -165,57 +273,36 @@ class iForest(object):
         for xi in range(X.shape[0]):
             tidx = np.arange(trees.shape[0])
             # get childs based on dot product from all trees
-            ni = np.where(X[xi].dot(n[:, 0].T) < pdotn[:, 0], left[:, 0].T, right[:, 0].T)
+            ni = where(X[xi].dot(n[:, 0].T) < pdotn[:, 0], left[:, 0].T, right[:, 0].T)
             # iterate through all levels of all trees at once
             for e in range(1, self.limit):
                 # get for e nodes from all trees
-                w = X[xi].dot(n[tidx, ni].T) < pdotn[tidx, ni]
+                #w = X[xi].dot(n[tidx, ni].T) < pdotn[tidx, ni] # here it's BLAS again, so optimised
                 # get childs from all trees
-                ni = np.where(w, left[tidx, ni].T, right[tidx, ni].T)
+                ni = where(X[xi].dot(n[tidx, ni].T) < pdotn[tidx, ni], left[tidx, ni].T, right[tidx, ni].T)
                 # capture terminal nodes
-                S[xi] += e*(ni==0).sum()
+                S[xi] += score_empty(e, ni) #e*(ni==0).sum()
                 # trim the trees for which terminal node was reached
                 tidx, ni = tidx[ni>0], ni[ni>0]
                 #if not len(ni): break
             # store number trees for which the deepest node was reached
             # and their sizes (size matters only at terminal nodes)
             size = sizes[tidx, ni]
-            S[xi] += self.limit*len(ni) + c_factor(size[size>1]).sum()
+            S[xi] += score_terminal(self.limit, ni, size) #self.limit*len(ni) + c_factor(size[size>1]).sum()
         # divide by total number of trees in the fores
         S *= 1. / len(trees)
         # and calculate anomaly scores
         S = 2.0**(-S / c_factor(self.sample))
         return S
 
-    def score_samples_without_using_childidx(self, X):
-        """This implementation doesn't rely on child info from trees
-        but its slightly slower than the default (~7%).
-        The results aren't exactly the same though. 
-        """
-        # this will store scores
-        S = np.zeros(X.shape[0])
-        trees = self.trees
-        n, pdotn, sizes = trees["n"], trees["pdotn"], trees["size"]
-        #powers = np.power(2, np.arange(self.limit+1))
-        # iterate over samples
-        for xi in range(X.shape[0]):
-            ni = np.zeros(len(trees), dtype='int')
-            w = X[xi].dot(n[:, 0].T) < pdotn[:, 0]
-            ni[w] += 1
-            ni[~w] += 2**self.limit
-            tidx = np.arange(trees.shape[0])
-            for e in range(1, self.limit):
-                w = X[xi].dot(n[tidx, ni].T) < pdotn[tidx, ni]
-                ni[w] += 1
-                ni[~w] += 2**(self.limit-e)
-                sel = sizes[tidx, ni]>1
-                S[xi] += e*(~sel).sum()
-                tidx, ni = tidx[sel], ni[sel]
-            # the size matters only at terminal nodes
-            size = sizes[tidx, ni]
-            S[xi] += self.limit*len(ni) + c_factor(size[size>1]).sum()
-        # divide by total number of trees in the fores
-        S *= 1. / len(trees)
-        # and calculate anomaly scores
-        S = 2.0**(-S / c_factor(self.sample))
-        return S
+
+@jit
+def where(w, a, b):
+    """Return np.where(w, a, b)"""
+    return np.where(w, a, b)
+    
+@jit
+def score_empty(e, ni):
+    """Return e*(ni==0).sum()"""
+    return e*(ni==0).sum()
+'''
