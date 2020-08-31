@@ -206,7 +206,7 @@ class iForest(object):
             for e in range(1, self.limit):
                 w = X[xi].dot(n[tidx, ni].T) < pdotn[tidx, ni]
                 ni = update_nodes(ni, w, self.limit, e)
-                sel = sizes[tidx, ni]>1
+                sel = sizes[tidx, ni]>0
                 S[xi] += score_false(e, sel) #e*(~sel).sum()
                 tidx, ni = tidx[sel], ni[sel]
             # the size matters only at terminal nodes
